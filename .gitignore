@@ -1,0 +1,25 @@
+# Rust/Cargo related files and directories
+target/
+Cargo.lock
+vendor/
+Cargo.toml.orig
+**/*.rs.bk
+
+# Generated files from rustdoc
+**/doc/
+
+# Executables files (should not be committed, except for binary targets in /examples and /benches)
+**/target/*/debug*
+**/target/*/release*
+**/target/*/examples
+**/target/*/benches
+
+# Rustfmt build cache
+.rustfmt.toml.sha256
+
+# IDE-specific files (for example, files used by Visual Studio Code, IntelliJ IDEA, etc.)
+.vscode/
+.idea/
+*.iml
+*.ipr
+*.iws
