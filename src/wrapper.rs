@@ -1,6 +1,6 @@
 use std::fmt;
 
-pub struct Wrapper(Vec<String>);
+pub struct Wrapper(pub Vec<String>);
 
 impl fmt::Display for Wrapper {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {

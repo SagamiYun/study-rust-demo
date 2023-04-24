@@ -1,6 +1,9 @@
 use crate::wrapper::Wrapper;
+use crate::vector::{IpAddr, V4};
+use crate::vector::V6;
 
 mod wrapper;
+mod vector;
 
 fn complications() {
     let penguin_data = "\
@@ -72,6 +75,17 @@ fn external_types_impl_exterior_features() {
     println!("w = {}", w);
 }
 
+fn store_different_types_of_vector() {
+    let v: Vec<Box<dyn IpAddr>> = vec![
+        Box::new(V4("127.0.0.1".to_string())),
+        Box::new(V6("::1".to_string())),
+    ];
+
+    for ip in v {
+        ip.display();
+    }
+}
+
 fn main() {
     // 复杂例子
     // complications();
@@ -83,5 +97,8 @@ fn main() {
     // citation()
 
     // 在外部类型上实现外部特征(new type)
-    external_types_impl_exterior_features()
+    // external_types_impl_exterior_features()
+
+    // 实现将不同对象加入到vector中(特征对象)
+    store_different_types_of_vector()
 }
