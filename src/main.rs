@@ -1,9 +1,16 @@
+use std::cell::RefCell;
+use std::rc::Rc;
+use crate::circular_reference::create_owner_gadget;
+use crate::life_time::test_lifetime;
 use crate::wrapper::Wrapper;
 use crate::vector::{IpAddr, V4};
 use crate::vector::V6;
 
 mod wrapper;
 mod vector;
+mod life_time;
+mod circular_reference;
+// mod cacher;
 
 fn complications() {
     let penguin_data = "\
@@ -86,6 +93,8 @@ fn store_different_types_of_vector() {
     }
 }
 
+
+
 fn main() {
     // 复杂例子
     // complications();
@@ -100,5 +109,11 @@ fn main() {
     // external_types_impl_exterior_features()
 
     // 实现将不同对象加入到vector中(特征对象)
-    store_different_types_of_vector()
+    // store_different_types_of_vector()
+
+    // 进阶lifetime
+    // test_lifetime()
+
+    // 循环引用
+    create_owner_gadget()
 }
