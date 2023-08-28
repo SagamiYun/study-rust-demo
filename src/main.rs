@@ -1,7 +1,19 @@
 use std::cell::RefCell;
-use std::rc::Rc;
+use std::rc::{Rc, Weak};
+use std::time::Duration;
+use std::fs;
+use std::io::prelude::*;
+use std::net::TcpListener;
+use std::net::TcpStream;
+use async_std::task;
+use async_std::task::spawn;
 use crate::circular_reference::create_owner_gadget;
+use crate::error::{a_depth_error, a_easy_error};
 use crate::life_time::test_lifetime;
+use crate::r#unsafe::array_to_slice;
+use crate::tcp_stream::handle_connection;
+use crate::thread::thread_main;
+use crate::tree::Node;
 use crate::wrapper::Wrapper;
 use crate::vector::{IpAddr, V4};
 use crate::vector::V6;
@@ -10,6 +22,12 @@ mod wrapper;
 mod vector;
 mod life_time;
 mod circular_reference;
+mod tree;
+mod thread;
+mod error;
+mod r#unsafe;
+mod tcp_stream;
+// mod web_server;
 // mod cacher;
 
 fn complications() {
@@ -93,9 +111,51 @@ fn store_different_types_of_vector() {
     }
 }
 
+fn circular_reference_tree () {
+    let leaf = Rc::new(Node {
+        value: 3,
+        parent: RefCell::new(Weak::new()),
+        children: RefCell::new(vec![]),
+    });
 
+    println!(
+        "leaf strong = {}, weak = {}",
+        Rc::strong_count(&leaf),
+        Rc::weak_count(&leaf),
+    );
 
-fn main() {
+    {
+        let branch = Rc::new(Node {
+            value: 5,
+            parent: RefCell::new(Weak::new()),
+            children: RefCell::new(vec![Rc::clone(&leaf)]),
+        });
+
+        *leaf.parent.borrow_mut() = Rc::downgrade(&branch);
+
+        println!(
+            "branch strong = {}, weak = {}",
+            Rc::strong_count(&branch),
+            Rc::weak_count(&branch),
+        );
+
+        println!(
+            "leaf strong = {}, weak = {}",
+            Rc::strong_count(&leaf),
+            Rc::weak_count(&leaf),
+        );
+    }
+
+    println!("leaf parent = {:?}", leaf.parent.borrow().upgrade());
+    println!(
+        "leaf strong = {}, weak = {}",
+        Rc::strong_count(&leaf),
+        Rc::weak_count(&leaf),
+    );
+}
+
+#[async_std::main]
+async fn main() {
     // 复杂例子
     // complications();
 
@@ -115,5 +175,31 @@ fn main() {
     // test_lifetime()
 
     // 循环引用
-    create_owner_gadget()
+    // create_owner_gadget()
+    // 使用weak完成tree数据结构
+    // circular_reference_tree()
+
+    // 线程
+    // thread_main()
+
+    // 最简单的错误
+    // a_easy_error()
+
+    // 更详尽的错误
+    // a_depth_error()
+
+    // unsafe的获取两个数组的切片
+    // array_to_slice()
+
+    // async web server
+    // loop_listen()
+    // 监听本地端口 7878 ，等待 TCP 连接的建立
+    let listener = TcpListener::bind("127.0.0.1:7878").await.unwrap();
+    listener
+        .incoming()
+        .for_each_concurrent(/* limit */ None, |stream| async move {
+            let stream = stream.unwrap();
+            spawn(handle_connection(stream));
+        })
+        .await;
 }
