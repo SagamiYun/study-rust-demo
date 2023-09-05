@@ -11,7 +11,7 @@ use crate::circular_reference::create_owner_gadget;
 use crate::error::{a_depth_error, a_easy_error};
 use crate::life_time::test_lifetime;
 use crate::r#unsafe::array_to_slice;
-use crate::tcp_stream::handle_connection;
+// use crate::tcp_stream::handle_connection;
 use crate::thread::thread_main;
 use crate::tree::Node;
 use crate::wrapper::Wrapper;
@@ -26,7 +26,8 @@ mod tree;
 mod thread;
 mod error;
 mod r#unsafe;
-mod tcp_stream;
+// mod tcp_stream;
+mod links;
 // mod web_server;
 // mod cacher;
 
@@ -154,7 +155,7 @@ fn circular_reference_tree () {
     );
 }
 
-#[async_std::main]
+// #[async_std::main]
 async fn main() {
     // 复杂例子
     // complications();
@@ -194,12 +195,15 @@ async fn main() {
     // async web server
     // loop_listen()
     // 监听本地端口 7878 ，等待 TCP 连接的建立
-    let listener = TcpListener::bind("127.0.0.1:7878").await.unwrap();
-    listener
-        .incoming()
-        .for_each_concurrent(/* limit */ None, |stream| async move {
-            let stream = stream.unwrap();
-            spawn(handle_connection(stream));
-        })
-        .await;
+    // let listener = TcpListener::bind("127.0.0.1:7878").await.unwrap();
+    // listener
+    //     .incoming()
+    //     .for_each_concurrent(/* limit */ None, |stream| async move {
+    //         let stream = stream.unwrap();
+    //         spawn(handle_connection(stream));
+    //     })
+    //     .await;
+
+
+    // links::link::say_hello();
 }
